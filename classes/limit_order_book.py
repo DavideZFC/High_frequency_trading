@@ -43,7 +43,8 @@ class LimitOrderBookSimulator:
     
     def simplify(self):
         '''
-        Simplify ask and bids so that the vectors remain disjoint
+        Simplify ask and bids: each time there is a bid higer than an ask there is a transaction (at the average price) and the two twings simplify
+        In this way the vectors remain disjoint, and the gap non-zero
         '''
         m = min(len(self.asks), len(self.bids))
         i = 0
@@ -65,7 +66,8 @@ class LimitOrderBookSimulator:
         Simulate the evolution of the stock price.
 
         Returns:
-        np.ndarray: Array of stock prices at each time step.
+        S: Array of stock prices at each time step.
+        queue_len: Array containing how many orders there are in the queue at given timestep
         """
 
         # Initialize stock price array
@@ -81,9 +83,17 @@ class LimitOrderBookSimulator:
         buy_orders = self.Lambda*self.sample_orders(size=self.N+1)
 
         for i in range(self.N):
+            '''
+            Model of the queues:
+                1. At each time the number of sell and buy orders are samples randomly (eq. 9 in the paper) as in the vectors sell_orders, buy_orders
+                2. For any of these orders, we sample its price for an exponential distribution. In this way, 
+                    the maximum of the orders grows logarithmically with order size (eq. 11)
+                3. The exponential distributions are shifted by a variable shift which reflects the fact that the buyer percieve that the price is going up or down
+                    in this way, we ensure that, approximately, the midprice is a Brownian motion with std sigma (eq. 1)
+            '''
             # Compute delta_bid values
-            delta_bids = np.random.exponential(size=int(sell_orders[i]))
-            delta_asks = np.random.exponential(size=int(buy_orders[i]))
+            delta_bids = np.random.exponential(scale=self.sigma, size=int(sell_orders[i]))
+            delta_asks = np.random.exponential(scale=self.sigma, size=int(buy_orders[i]))
             shift = np.random.normal(0,self.sigma)
 
             # Center the order w.r.t. the mean
