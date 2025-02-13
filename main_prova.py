@@ -1,5 +1,24 @@
-from sortedcontainers import SortedList
+from classes.market import market
+from classes.basics.order import order
 
+
+# buyer, you pay the ask price
+# seller, you receive the bid price
+
+mar = market()
+
+o = order(id='1', value=10, typ='bid')
+mar.add_order(o)
+o = order(id='2', value=11, typ='bid')
+mar.add_order(o)
+o = order(id='3', value=19, typ='ask')
+mar.add_order(o)
+o = order(id='4', value=17, typ='ask')
+mar.add_order(o)
+print(mar.ask_book.get_first())
+
+
+'''
 class A:
     def __init__(self, name, value):
         self.name = name
@@ -25,3 +44,4 @@ print(sl)  # Output: [A(banana, 5), A(apple, 10), A(cherry, 20)]
 
 # Rimozione del primo elemento (minimo)
 print(sl.pop(0))  # Output: A(banana, 5)
+'''

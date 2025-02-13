@@ -10,17 +10,14 @@ class lob:
         adds order in the right place of the queue
         '''
         if not (o.typ == self.typ):
-            raise ValueError("wrong order list")
-
-
-        if (not self.min_value):
-            self.min_value = o.value
-            self.max_value = o.value
-        else:
-            self.min_value = min(self.min_value, o.value)
-            self.max_value = max(self.max_value, o.value)
+            raise ValueError("wrong order book: book type = {}, order type = {}".format(self.typ, o.typ))
 
         self.orders.add(o)
 
-    def __repr__(self):
-        return f"A({self.name}, {self.value})"    
+    def get_first(self):
+        if self.typ == 'ask':
+            return self.orders.pop(0)
+        return self.orders.pop()
+
+    def print(self):
+        print(self.orders)
