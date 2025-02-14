@@ -8,15 +8,15 @@ from classes.basics.order import order
 mar = market()
 
 o = order(id='1', value=10, typ='bid')
-mar.add_order(o)
+mar.new_order(o)
 o = order(id='2', value=11, typ='bid')
-mar.add_order(o)
-o = order(id='3', value=19, typ='ask')
-mar.add_order(o)
-o = order(id='4', value=17, typ='ask')
-mar.add_order(o)
+mar.new_order(o)
+o = order(id='3', value=4, typ='ask')
+mar.new_order(o)
+o = order(id='4', value=7, typ='ask')
+mar.new_order(o)
 print(mar.ask_book.get_first())
-
+print(mar.bid_book.get_first())
 
 '''
 class A:

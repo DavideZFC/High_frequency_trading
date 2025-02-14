@@ -15,9 +15,21 @@ class lob:
         self.orders.add(o)
 
     def get_first(self):
+        if len(self.orders) == 0:
+            return None
         if self.typ == 'ask':
             return self.orders.pop(0)
         return self.orders.pop()
+    
+    def best_price(self):
+        if len(self.orders) > 0:
+            if self.typ == 'ask':
+                return self.orders[0].value
+            else:
+                return self.orders[-1].value
+        if self.typ == 'ask':
+            return 100000
+        return -100000
 
     def print(self):
         print(self.orders)
