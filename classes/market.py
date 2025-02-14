@@ -15,7 +15,7 @@ class market:
                 return
         if o.typ == 'bid':
             if self.ask_book.best_price() < o.value:
-                o1 = self.bid_book.get_first()
+                o1 = self.ask_book.get_first()
                 print(f'transition occured at value {o1.value}')
                 return
         self.add_order(o)
