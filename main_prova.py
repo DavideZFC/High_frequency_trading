@@ -13,3 +13,7 @@ for i in range(time_horizon):
     else:
         typ = 'bid'
     mar.add_random_order(typ)
+    print(mar.mark.best_difference())
+
+print(len(mar.mark.bid_book.orders))
+print(mar.mark.bid_book.get_first())

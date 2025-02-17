@@ -23,8 +23,9 @@ class market_simularor:
         '''
         mu = self.mu_bid if typ == 'bid' else self.mu_ask
         value = np.random.normal(mu, self.sd)
+        size = np.random.randint(1,10)
 
-        o = order(str(self.order_id), value, typ)
+        o = order(str(self.order_id), value, typ, size=size)
         self.mark.new_order(o)
 
         self.order_id += 1

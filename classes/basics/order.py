@@ -12,7 +12,10 @@ class order:
         self.size = size
 
     def __lt__(self, other):
-        return self.value < other.value
+        if self.typ == 'ask':
+            return self.value < other.value
+        else:
+            return self.value > other.value
 
     def __repr__(self):
-        return f"order({self.id}, {self.value}, {self.typ})"
+        return f"order({self.id}, {self.value}, {self.typ}, {self.size})"
