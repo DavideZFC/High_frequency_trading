@@ -1,5 +1,5 @@
 from classes.stock_simulator import StockPriceSimulator
-from classes.limit_order_book import LimitOrderBookSimulator
+from old_files.limit_order_book import LimitOrderBookSimulator
 
 S0 = 100        # Initial stock price
 T = 1000         # Total time period

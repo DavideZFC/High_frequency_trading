@@ -1,19 +1,15 @@
 from classes.market_simulator import market_simularor
-
+import matplotlib.pyplot as plt
 
 # buyer, you pay the ask price
 # seller, you receive the bid price
 
-mar = market_simularor(mu_bid=0.5, mu_ask=1.0, sd=1)
+mar = market_simularor(mu_bid=0.5, mu_ask=1.0, sd=0.25, Lambda=10)
 
-time_horizon = 100
-for i in range(time_horizon):
-    if i % 2 == 0:
-        typ = 'ask'
-    else:
-        typ = 'bid'
-    mar.add_random_order(typ)
-    print(mar.mark.best_difference())
-
-print(len(mar.mark.bid_book.orders))
-print(mar.mark.bid_book.get_first())
+time_horizon = 400
+mar.simulate_evolution(horizon=time_horizon, drift=0.001)
+plt.plot(mar.midprice_history, label='midprice')
+plt.plot(mar.ask_history, label='ask price')
+plt.plot(mar.bid_history, label='bid price')
+plt.legend()
+plt.show()

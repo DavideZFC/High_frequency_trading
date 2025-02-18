@@ -15,22 +15,7 @@ class market:
             o.size = self.ask_book.cancel_out(o.value, o.size)
         if o.size > 0:
             self.add_order(o)
-        print(f'new order of type {o.typ} added')
 
-        '''
-        if o.typ == 'ask':
-            if self.bid_book.best_price() > o.value:
-                o1 = self.bid_book.get_first()
-                print(f'transition occured at value {o1.value}')
-                return
-        if o.typ == 'bid':
-            if self.ask_book.best_price() < o.value:
-                o1 = self.ask_book.get_first()
-                print(f'transition occured at value {o1.value}')
-                return
-        self.add_order(o)
-        print(f'new order of type {o.typ} added')
-        '''
 
     def add_order(self, o):
         '''
@@ -40,6 +25,7 @@ class market:
             self.ask_book.add_order(o)
         else:
             self.bid_book.add_order(o)
+
 
     def best_difference(self):
         bid = self.bid_book.best_price()
