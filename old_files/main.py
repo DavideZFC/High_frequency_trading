@@ -1,4 +1,4 @@
-from classes.stock_simulator import StockPriceSimulator
+from old_files.stock_simulator import StockPriceSimulator
 from old_files.limit_order_book import LimitOrderBookSimulator
 
 S0 = 100        # Initial stock price
