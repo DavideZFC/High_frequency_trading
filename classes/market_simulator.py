@@ -68,7 +68,7 @@ class MarketSimulator:
         size = x0 * (1 - U) ** (-1 / self.alpha)
         return max(1, int(size))  # Ensure size is at least 1
 
-    def simulate_evolution(self, horizon: int, drift: float = 0, p: float = 0.5):
+    def simulate_evolution(self, horizon: int, drift: float = 0, p: float = 0.5, exponential_update=False):
         """
         Simulates the market evolution over a specified time horizon.
 
@@ -98,5 +98,11 @@ class MarketSimulator:
             self.bid_history[t] = np.clip(bid, self.mu_bid / 2, self.mu_ask * 2)
 
             # Apply drift to move the price means over time
-            self.mu_bid += drift
-            self.mu_ask += drift
+            if exponential_update:
+                self.mu_ask *= (1+drift)
+                self.mu_bid *= (1+drift)
+                self.sd *= (1+drift)
+            else:    
+                self.mu_bid += drift
+                self.mu_ask += drift
+                self.sd += drift
