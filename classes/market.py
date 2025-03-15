@@ -50,7 +50,7 @@ class Market:
         else:
             self.bid_book.add_order(order)
 
-    def best_bid_ask(self) -> tuple[float, float]:
+    def best_bid_ask(self):
         """
         Retrieves the best bid and ask prices from the books.
 
