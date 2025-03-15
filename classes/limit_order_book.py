@@ -93,6 +93,34 @@ class LimitOrderBook:
             else:
                 break
         return size
+    
+    def operate_now(self, size):
+        """
+        Buy or sell immediately a quantity corresponding to size.
+
+        Args:
+            size (int): the size of the order
+        
+        Returns:
+            float, int: the value for the transaction, the size that we could not sell or buy due to the end of the order book
+        """
+        transaction_value = 0
+
+        while self.orders:
+            top_order = self.orders[0]
+                        
+            if size >= top_order.size:
+                # Fully consume the top order
+                transaction_value += top_order.size*top_order.price
+                size -= top_order.size
+                self.get_first()
+            else:
+                # Partially consume the top order
+                transaction_value += size*top_order.price
+                top_order.size -= size
+                return transaction_value, 0
+        return transaction_value, size
+
 
     def display_orders(self):
         """

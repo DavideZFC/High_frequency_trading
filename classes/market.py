@@ -50,6 +50,25 @@ class Market:
         else:
             self.bid_book.add_order(order)
 
+    def operate_now(self, size, order_type):
+        """
+        command to sell or buy immediately.
+
+        Args:
+            size (int): the size of the order
+            order_type (str): says if ask or bid
+        
+        Returns:
+            float, int: the value for the transaction, the size that we could not sell or buy due to the end of the order book
+
+        """
+        if order_type == 'sell':
+            return self.bid_book.operate_now(size)
+        elif order_type == 'buy':
+            return self.ask_book.operate_now(size)
+        else:
+            raise ValueError('Order type must be buy or sell')
+
     def best_bid_ask(self):
         """
         Retrieves the best bid and ask prices from the books.
