@@ -36,6 +36,97 @@ class MarketSimulator:
         self.sd = sd
         self.Lambda = Lambda
         self.alpha = alpha
+        self.exponential_update = True
+        self.t = 0
+
+    def set_horizon(self, hor):
+        """
+        Choose the horizon of the process
+
+        Args:
+            hor (int): the horizon
+        """
+        self.horizon = hor
+
+    def set_drif(self, drift):
+        """
+        Choose the drift of the process
+
+        Args:
+            drift (float): the drift
+        """
+        self.drift = drift
+
+    def reset(self, warmup=10):
+        """
+        We reset the environment and make some warmup steps to avoid having empty order books
+
+        Args:
+            warmup (int): how many warmup steps to do
+        """
+        self.midprice_history = np.zeros(self.horizon + warmup)
+        self.ask_history = np.zeros(self.horizon + warmup)
+        self.bid_history = np.zeros(self.horizon + warmup)
+
+        for t in range(warmup):
+            # Generate Lambda random orders at each time step
+            for _ in range(self.Lambda):
+                order_type = 'ask' if np.random.binomial(1, 0.5) == 0 else 'bid'
+                order = self.get_random_order(order_type)
+                self.market.new_order(order)
+
+            # Retrieve best bid and ask prices
+            bid, ask = self.market.best_bid_ask()
+
+            # Compute and store midprice and best prices, ensuring realistic bounds
+            midprice = (bid + ask) / 2
+            self.midprice_history[t] = np.clip(midprice, self.mu_bid / 2, self.mu_ask * 2)
+            self.ask_history[t] = np.clip(ask, self.mu_bid / 2, self.mu_ask * 2)
+            self.bid_history[t] = np.clip(bid, self.mu_bid / 2, self.mu_ask * 2)
+
+            # Apply drift to move the price means over time
+            if self.exponential_update:
+                self.mu_ask *= (1+self.drift)
+                self.mu_bid *= (1+self.drift)
+                self.sd *= (1+self.drift)
+            else:    
+                self.mu_bid += self.drift
+                self.mu_ask += self.drift
+                self.sd += self.drift
+        self.t = warmup
+
+    def step(self, action):
+        """
+        We make a step in the environment
+
+        Args:
+            action (tuple): tuple composed by a string "buy" or "sell" and an integer corresponding to the size
+        """
+
+        # how much we lose or get
+        revenue, remaining = self.market.operate_now(action[1], action[0])
+        if action[0] == "buy":
+            revenue = -revenue
+
+        # from this point on, we start with the actual evolution of the market
+
+        for _ in range(self.Lambda):
+            order_type = 'ask' if np.random.binomial(1, 0.5) == 0 else 'bid'
+            order = self.get_random_order(order_type)
+            self.market.new_order(order)
+
+        # Retrieve best bid and ask prices
+        bid, ask = self.market.best_bid_ask()
+
+        # Compute and store midprice and best prices, ensuring realistic bounds
+        midprice = (bid + ask) / 2
+        self.midprice_history[self.t] = np.clip(midprice, self.mu_bid / 2, self.mu_ask * 2)
+        self.ask_history[self.t] = np.clip(ask, self.mu_bid / 2, self.mu_ask * 2)
+        self.bid_history[self.t] = np.clip(bid, self.mu_bid / 2, self.mu_ask * 2)
+
+        self.t += 1
+        return midprice, revenue, remaining
+
 
     def get_random_order(self, order_type: str):
         """
