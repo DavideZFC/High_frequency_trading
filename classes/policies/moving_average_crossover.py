@@ -1,7 +1,7 @@
 
 
 class MovingAverageCrossover:
-    def __init__(self, initial_amount=0, money=0, short_window=10, long_window=30, size_trade=10):
+    def __init__(self, initial_amount=0, money=0, short_window=10, long_window=30, size_trade=10, time_horizon=1000):
         """
         Inizializza lo stratega del Moving Average Crossover.
 
@@ -15,9 +15,12 @@ class MovingAverageCrossover:
         self.money = money
         self.short_window = short_window
         self.long_window = long_window
-        self.prices = [] 
+        self.prices = []
+        self.action_history = [] 
         self.current_signal = "hold"
         self.size_trade = size_trade
+        self.time_horizon = time_horizon
+        self.t = 0
 
     def update(self, action, price, revenue, remaining):
         """
@@ -35,7 +38,7 @@ class MovingAverageCrossover:
         else:
             self.current_amount = self.current_amount + action[1] - remaining
 
-        self.money -= revenue
+        self.money += revenue
         self.observe_price(price)
 
     def observe_price(self, price):
@@ -64,6 +67,9 @@ class MovingAverageCrossover:
     def trade(self):
         # we have to take into account that if we buy immediately a big quantity of a given stock, 
         # the price could be much different than the midprice, depending on the depth of the order book
+        self.t += 1
+        if self.size_trade*(self.time_horizon - self.t - 1)<self.current_amount:
+            return "sell", min(self.size_trade, self.current_amount)
 
         if self.current_signal == "hold":
             # holding corresponds to buying zero

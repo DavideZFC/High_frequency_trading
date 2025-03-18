@@ -18,7 +18,7 @@ class MarketSimulator:
         alpha (float): Parameter for order size distribution.
     """
 
-    def __init__(self, mu_bid: float, mu_ask: float, sd: float, Lambda: int = 10, alpha: float = 1.53):
+    def __init__(self, mu_bid: float, mu_ask: float, sd: float, Lambda: int = 10, alpha: float = 1.53, exponential_update: bool = True):
         """
         Initializes the MarketSimulator.
 
@@ -36,7 +36,7 @@ class MarketSimulator:
         self.sd = sd
         self.Lambda = Lambda
         self.alpha = alpha
-        self.exponential_update = True
+        self.exponential_update = exponential_update
         self.t = 0
 
     def set_horizon(self, hor):
@@ -123,6 +123,16 @@ class MarketSimulator:
         self.midprice_history[self.t] = np.clip(midprice, self.mu_bid / 2, self.mu_ask * 2)
         self.ask_history[self.t] = np.clip(ask, self.mu_bid / 2, self.mu_ask * 2)
         self.bid_history[self.t] = np.clip(bid, self.mu_bid / 2, self.mu_ask * 2)
+
+        # Apply drift to move the price means over time
+        if self.exponential_update:
+            self.mu_ask *= (1+self.drift)
+            self.mu_bid *= (1+self.drift)
+            self.sd *= (1+self.drift)
+        else:    
+            self.mu_bid += self.drift
+            self.mu_ask += self.drift
+            self.sd += self.drift
 
         self.t += 1
         return midprice, revenue, remaining
