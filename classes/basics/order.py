@@ -23,15 +23,19 @@ class Order:
         self.callback = callback
 
     def modify_order(self, size):
+        if size == 0:
+            return
         self.size -= size
         if self.callback:
-            print("old order executed: size {}, price {}, order_type {}".format(size, self.price, self.order_type))
+            # print("old order executed: size {}, price {}, order_type {}".format(size, self.price, self.order_type))
             self.callback(size, self.price, self.order_type)
 
     def match(self, size, price):
+        if size == 0:
+            return
         self.size -= size
         if self.callback:
-            print("new order executed: size {}, price {}, order_type {}".format(size, price, self.order_type))
+            # print("new order executed: size {}, price {}, order_type {}".format(size, price, self.order_type))
             self.callback(size, price, self.order_type)
         
 

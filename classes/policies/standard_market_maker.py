@@ -20,6 +20,7 @@ class StandardMarketMaker:
 
     def trade(self):
         id = "my_order_"+str(self.t)
+        self.t += 1
         if self.t % 2 == 0:
             return Order(id, self.price_down, "bid", self.size_trade, self.callback)
         if self.t % 2 == 1:

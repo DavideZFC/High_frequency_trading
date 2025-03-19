@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 
 mar = MarketSimulator(mu_bid=10.5, mu_ask=11.0, sd=1.0, Lambda=50)
 
-time_horizon = 20
+time_horizon = 1000
 name = 'market_making_experiment_{}'.format(time_horizon)
-policy = StandardMarketMaker(price_down=10.0, price_up=14.0, size_trade=5)
+policy = StandardMarketMaker(price_down=10.5, price_up=11.0, size_trade=5)
 
-mar.set_drif(0.0005)
+mar.set_drif(0.00005)
 mar.set_horizon(time_horizon)
 
 mar.reset(warmup=10)
