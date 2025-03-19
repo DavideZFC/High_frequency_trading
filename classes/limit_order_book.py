@@ -61,7 +61,7 @@ class LimitOrderBook:
             return self.orders[0].price
         return float('inf') if self.order_type == 'ask' else float('-inf')
 
-    def cancel_out(self, price: float, size: int):
+    def cancel_out(self, order):
         """
         Matches incoming market orders against the order book until the size is filled or no match is possible.
 
@@ -79,20 +79,22 @@ class LimitOrderBook:
         while self.orders:
             best_price = self.best_price()
             # Check if the incoming order price can match with the best order
-            if (self.order_type == 'ask' and price > best_price) or (self.order_type == 'bid' and price < best_price):
+            if (self.order_type == 'ask' and order.price > best_price) or (self.order_type == 'bid' and order.price < best_price):
                 top_order = self.orders[0]
                 
-                if size >= top_order.size:
+                if order.size >= top_order.size:
                     # Fully consume the top order
-                    size -= top_order.size
+                    top_order.modify_order(top_order.size)
+                    order.match(top_order.size, top_order.price)
                     self.get_first()
                 else:
                     # Partially consume the top order
-                    top_order.size -= size
+                    top_order.modify_order(order.size)
+                    order.match(order.size, top_order.price)
                     return 0
             else:
                 break
-        return size
+        return order.size
     
     def operate_now(self, size):
         """

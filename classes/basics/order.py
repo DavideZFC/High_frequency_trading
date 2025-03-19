@@ -10,7 +10,7 @@ class Order:
         size (int): Size or quantity of the order. Defaults to 1.
     """
 
-    def __init__(self, id: str, price: float, order_type: str, size: int = 1):
+    def __init__(self, id: str, price: float, order_type: str, size: int = 1, callback=None):
         if order_type not in {'bid', 'ask'}:
             raise ValueError("order_type must be 'bid' or 'ask'")
         if price <= 0:
@@ -20,6 +20,20 @@ class Order:
         self.price = price
         self.order_type = order_type
         self.size = size
+        self.callback = callback
+
+    def modify_order(self, size):
+        self.size -= size
+        if self.callback:
+            print("old order executed: size {}, price {}, order_type {}".format(size, self.price, self.order_type))
+            self.callback(size, self.price, self.order_type)
+
+    def match(self, size, price):
+        self.size -= size
+        if self.callback:
+            print("new order executed: size {}, price {}, order_type {}".format(size, price, self.order_type))
+            self.callback(size, price, self.order_type)
+        
 
     def __lt__(self, other: "Order") -> bool:
         """

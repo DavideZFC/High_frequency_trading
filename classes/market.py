@@ -29,10 +29,10 @@ class Market:
         """
         if order.order_type == 'ask':
             # Attempt to match with the bid book; update remaining size
-            order.size = self.bid_book.cancel_out(price=order.price, size=order.size)
+            order.size = self.bid_book.cancel_out(order)
         else:
             # Attempt to match with the ask book
-            order.size = self.ask_book.cancel_out(price=order.price, size=order.size)
+            order.size = self.ask_book.cancel_out(order)
 
         # If part of the order remains unmatched, add it to the appropriate book
         if order.size > 0:

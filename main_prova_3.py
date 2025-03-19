@@ -1,5 +1,5 @@
 from classes.market_simulator import MarketSimulator
-from classes.policies.moving_average_crossover import MovingAverageCrossover
+from classes.policies.standard_market_maker import StandardMarketMaker
 import matplotlib.pyplot as plt
 
 # buyer, you pay the ask price
@@ -8,18 +8,18 @@ import matplotlib.pyplot as plt
 mar = MarketSimulator(mu_bid=10.5, mu_ask=11.0, sd=1.0, Lambda=50)
 
 time_horizon = 20
-name = 'price_variation_hor_{}'.format(time_horizon)
-policy = MovingAverageCrossover(short_window=20, long_window=50, size_trade=5, time_horizon=time_horizon)
+name = 'market_making_experiment_{}'.format(time_horizon)
+policy = StandardMarketMaker(price_down=10.0, price_up=14.0, size_trade=5)
 
 mar.set_drif(0.0005)
 mar.set_horizon(time_horizon)
 
 mar.reset(warmup=10)
 for t in range(time_horizon):
-    action = policy.trade()
-    midprice, revenue, remaining = mar.step(action)
-    policy.update(action, midprice, revenue, remaining)
-    if t % 100 == 0:
+    order = policy.trade()
+    midprice = mar.step_order(order)
+    policy.update(midprice)
+    if t % int(time_horizon/10) == 0:
         print(policy.current_amount, policy.money)
 
 print("final revenue:")
