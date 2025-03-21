@@ -37,7 +37,13 @@ class Order:
         if self.callback:
             # print("new order executed: size {}, price {}, order_type {}".format(size, price, self.order_type))
             self.callback(size, price, self.order_type)
-        
+
+    def retire(self):
+        if self.order_type == 'ask':
+            try:
+                self.callback(self.size, self.price, self.order_type, retire=True)
+            except:
+                pass      
 
     def __lt__(self, other: "Order") -> bool:
         """

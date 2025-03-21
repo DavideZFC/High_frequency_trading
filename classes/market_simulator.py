@@ -121,14 +121,9 @@ class MarketSimulator:
         self.bid_history[self.t] = np.clip(bid, self.mu_bid / 2, self.mu_ask * 2)
 
         # Apply drift to move the price means over time
-        if self.exponential_update:
-            self.mu_ask *= (1+self.drift)
-            self.mu_bid *= (1+self.drift)
-            self.sd *= (1+self.drift)
-        else:    
-            self.mu_bid += self.drift
-            self.mu_ask += self.drift
-            self.sd += self.drift
+        alpha = 0.01
+        self.mu_bid = (1-alpha)*self.mu_bid+alpha*bid - self.drift
+        self.mu_ask = (1-alpha)*self.mu_ask+alpha*ask - self.drift
 
         self.t += 1
         return midprice
@@ -174,6 +169,10 @@ class MarketSimulator:
 
         self.t += 1
         return midprice, revenue, remaining
+    
+    def close_market(self):
+        for order in self.market.ask_book.orders:
+            order.retire()
 
 
     def get_random_order(self, order_type: str):

@@ -11,7 +11,11 @@ class StandardMarketMaker:
         self.t = 0
         self.size_trade = size_trade
 
-    def callback(self, size, price, order_type):
+    def callback(self, size, price, order_type, retire=False):
+        if retire:
+            # in this case we retire an "ask" order which was not sold
+            self.current_amount += size
+            return
         if order_type == "ask":
             self.money += size*price
         elif order_type == "bid":
